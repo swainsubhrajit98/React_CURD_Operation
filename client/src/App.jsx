@@ -3,29 +3,49 @@ import { ItemAPI } from "./api";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function App() {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState([]); // always an array
   const [form, setForm] = useState({ name: "", description: "", price: "" });
   const [editingId, setEditingId] = useState(null);
 
+  // load items on mount
   useEffect(() => {
     load();
   }, []);
 
   async function load() {
-    const data = await ItemAPI.list();
-    setItems(data);
+    try {
+      const response = await ItemAPI.list();
+      // if API shape is { success, data: [...] }
+      setItems(Array.isArray(response.data) ? response.data : []);
+    } catch (err) {
+      console.error("Failed to load items:", err);
+      setItems([]); // fallback to empty list
+    }
   }
 
   async function submit(e) {
     e.preventDefault();
-    if (editingId) {
-      await ItemAPI.update(editingId, form);
-    } else {
-      await ItemAPI.create(form);
+    try {
+      if (editingId) {
+        await ItemAPI.update(editingId, form);
+      } else {
+        await ItemAPI.create(form);
+      }
+      setForm({ name: "", description: "", price: "" });
+      setEditingId(null);
+      load();
+    } catch (err) {
+      console.error("Failed to submit:", err);
     }
-    setForm({ name: "", description: "", price: "" });
-    setEditingId(null);
-    load();
+  }
+
+  async function handleDelete(id) {
+    try {
+      await ItemAPI.remove(id);
+      load();
+    } catch (err) {
+      console.error("Failed to delete:", err);
+    }
   }
 
   return (
@@ -33,6 +53,7 @@ export default function App() {
       <div className="card shadow p-4">
         <h1 className="text-center mb-4">Items CRUD</h1>
 
+        {/* form */}
         <form onSubmit={submit} className="mb-4">
           <div className="mb-3">
             <input
@@ -71,36 +92,47 @@ export default function App() {
           </button>
         </form>
 
+        {/* item list */}
         <ul className="list-group">
-          {items.map((i) => (
-            <li
-              key={i.id}
-              className="list-group-item d-flex justify-content-between align-items-center"
-            >
-              <div>
-                <h5>{i.name}</h5>
-                <p className="mb-1">{i.description}</p>
-                <span className="text-success fw-bold">${i.price}</span>
-              </div>
-              <div className="btn-group">
-                <button
-                  onClick={() => {
-                    setEditingId(i.id);
-                    setForm(i);
-                  }}
-                  className="btn btn-warning"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => ItemAPI.remove(i.id).then(load)}
-                  className="btn btn-danger"
-                >
-                  Delete
-                </button>
-              </div>
+          {items.length > 0 ? (
+            items.map((i) => (
+              <li
+                key={i.id}
+                className="list-group-item d-flex justify-content-between align-items-center"
+              >
+                <div>
+                  <h5>{i.name}</h5>
+                  <p className="mb-1">{i.description}</p>
+                  <span className="text-success fw-bold">${i.price}</span>
+                </div>
+                <div className="btn-group">
+                  <button
+                    onClick={() => {
+                      setEditingId(i.id);
+                      setForm({
+                        name: i.name,
+                        description: i.description,
+                        price: i.price,
+                      });
+                    }}
+                    className="btn btn-warning"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(i.id)}
+                    className="btn btn-danger"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))
+          ) : (
+            <li className="list-group-item text-center">
+              No items found. Add one above 👆
             </li>
-          ))}
+          )}
         </ul>
       </div>
     </div>
