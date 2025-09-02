@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { errorHandler } from "./middlewares/error.middleware.js";
 import { connectDB, sequelize } from "./config/db.js";
 import itemRoutes from "./routes/item.routes.js";
 
@@ -12,6 +13,7 @@ app.use(express.json());
 
 app.get("/", (req, res) => res.json({ message: "API running" }));
 app.use("/api/items", itemRoutes);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 4000;
 
