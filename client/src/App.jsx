@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ItemAPI } from "./api";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css"; // 👈 add styles here
 
 export default function App() {
   const [items, setItems] = useState([]);
@@ -48,9 +49,10 @@ export default function App() {
 
   return (
     <div className="container py-5">
-      <div className="card shadow p-4">
-        <h1 className="text-center mb-4">Items CRUD</h1>
+      <div className="card shadow p-4 animated-star-card">
+        <h1 className="text-center mb-4 text-light">Items CRUD</h1>
 
+        {/* form */}
         <form onSubmit={submit} className="mb-4">
           <div className="mb-3">
             <input
@@ -89,12 +91,13 @@ export default function App() {
           </button>
         </form>
 
+        {/* item list */}
         <ul className="list-group">
           {items.length > 0 ? (
             items.map((i) => (
               <li
                 key={i.id}
-                className="list-group-item d-flex justify-content-between align-items-center"
+                className="list-group-item d-flex justify-content-between align-items-center bg-dark text-light"
               >
                 <div>
                   <h5>{i.name}</h5>
@@ -125,8 +128,8 @@ export default function App() {
               </li>
             ))
           ) : (
-            <li className="list-group-item text-center">
-              No items found. Add one above
+            <li className="list-group-item text-center bg-dark text-light">
+              No items found. Add one above 👆
             </li>
           )}
         </ul>

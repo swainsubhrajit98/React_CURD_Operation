@@ -1,0 +1,42 @@
+.animated-star-card {
+    position: relative;
+    background: #0d0d0d;
+    color: #fff;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+/* stars layer */
+.animated-star-card::before,
+.animated-star-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    background: transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;
+    opacity: 0.4;
+    animation: moveStars 60s linear infinite;
+}
+
+.animated-star-card::after {
+    opacity: 0.7;
+    animation-duration: 120s;
+}
+
+@keyframes moveStars {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-100px);
+    }
+}
+
+/* keep card content above stars */
+.animated-star-card * {
+    position: relative;
+    z-index: 1;
+}
