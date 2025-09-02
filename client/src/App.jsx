@@ -3,11 +3,10 @@ import { ItemAPI } from "./api";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function App() {
-  const [items, setItems] = useState([]); // always an array
+  const [items, setItems] = useState([]);
   const [form, setForm] = useState({ name: "", description: "", price: "" });
   const [editingId, setEditingId] = useState(null);
 
-  // load items on mount
   useEffect(() => {
     load();
   }, []);
@@ -15,11 +14,10 @@ export default function App() {
   async function load() {
     try {
       const response = await ItemAPI.list();
-      // if API shape is { success, data: [...] }
       setItems(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       console.error("Failed to load items:", err);
-      setItems([]); // fallback to empty list
+      setItems([]);
     }
   }
 
@@ -53,7 +51,6 @@ export default function App() {
       <div className="card shadow p-4">
         <h1 className="text-center mb-4">Items CRUD</h1>
 
-        {/* form */}
         <form onSubmit={submit} className="mb-4">
           <div className="mb-3">
             <input
@@ -92,7 +89,6 @@ export default function App() {
           </button>
         </form>
 
-        {/* item list */}
         <ul className="list-group">
           {items.length > 0 ? (
             items.map((i) => (
@@ -130,7 +126,7 @@ export default function App() {
             ))
           ) : (
             <li className="list-group-item text-center">
-              No items found. Add one above 👆
+              No items found. Add one above
             </li>
           )}
         </ul>
